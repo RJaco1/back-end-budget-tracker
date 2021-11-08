@@ -1,0 +1,22 @@
+# BUILD
+# docker build -t backend-budget-tracker:0.1.0 -f DockerFile .
+# RUN
+# docker run -p 3800:3800 -e POSTGRE_PASS=admin -d backend-budget-tracker:0.1.0
+
+FROM node:14.17.6
+
+ENV POSTGRE_USER=postgres \
+    POSTGRE_PASS=123 \
+    POSTGRE_HOST=localhost \
+    POSTGRE_DATABASE=BudgetTrackerDB \
+    POSTGRE_PORT=5432
+
+COPY . /opt/app
+
+WORKDIR /opt/app
+
+RUN npm install
+
+CMD ["npm", "start"]
+
+EXPOSE 3800
