@@ -21,7 +21,9 @@ User.create = (data) => {
                                             ('Gifts', '2', $1),
                                             ('Shopping', '2', $1),
                                             ('Travel', '2', $1),
-                                            ('Eating out', '2', $1)`;
+                                            ('Eating out', '2', $1),
+                                            ('Transfer Income', '1', $1),
+                                            ('Transfer Outcome', '2', $1)`;
             await pgdb.query(SQL_DEFAULT_CATEGORIES, userId);
             resolve();
         } catch (e) {

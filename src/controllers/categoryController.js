@@ -20,3 +20,10 @@ module.exports.updateCategory = (req, res, next) => {
         .then(() => { res.status(200).json({ valid: true, message: 'category updated' }) })
         .catch((e) => { res.status(400).json({ valid: false, message: e }) });
 };
+
+module.exports.getTransferCategories = (req, res, next) => {
+    const args = [req.user.uid];
+    Category.transferCategories(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+};

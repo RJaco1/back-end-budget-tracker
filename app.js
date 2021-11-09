@@ -9,6 +9,7 @@ const categoryType = require('./src/routes/categoryTypeRouter');
 const user = require('./src/routes/userRouter');
 const category = require('./src/routes/categoryRouter');
 const account = require('./src/routes/accountRouter');
+const transaction = require('./src/routes/transactionRouter');
 
 //CORS
 app.use(cors);
@@ -20,6 +21,7 @@ app.use(categoryType);
 app.use(user);
 app.use(category);
 app.use(account);
+app.use(transaction);
 
 app.listen(server.port, () => {
     console.log(`Server running in port: ${server.port}`);
