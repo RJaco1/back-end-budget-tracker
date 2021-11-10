@@ -4,7 +4,21 @@ const Transaction = {};
 
 Transaction.fetchAll = (data) => {
     const bindings = [...data]
-    const SQL_SELECT_TRANSACTIONS = `SELECT * FROM TRANSACTIONS WHERE USER_ID = $1`;
+    const SQL_SELECT_TRANSACTIONS = `SELECT TRANSACTIONS.TRANSACTION_ID, 
+                                        CASE
+                                        WHEN (CATEGORIES.CATEGORY = 'Transfer Outcome')
+                                        THEN CONCAT('$ ','-',TRANSACTIONS.AMOUNT)
+                                        ELSE CONCAT('$',TRANSACTIONS.AMOUNT)
+                                        END AS AMOUNT, CATEGORIES.CATEGORY, 
+                                        CATEGORIES_TYPE.CATEGORY_TYPE, BANK_ACCOUNTS.ACCOUNT_NAME,
+                                        TO_CHAR(TRANSACTIONS.TRANSACTION_DATE, 'mm/dd/yyyy') AS TRANSACTION_DATE
+                                    FROM TRANSACTIONS
+                                    INNER JOIN CATEGORIES
+                                        ON TRANSACTIONS.CATEGORY_ID = CATEGORIES.CATEGORY_ID
+                                    INNER JOIN CATEGORIES_TYPE
+                                        ON CATEGORIES.CATEGORY_TYPE_ID = CATEGORIES_TYPE.CATEGORY_TYPE_ID
+                                    INNER JOIN BANK_ACCOUNTS ON TRANSACTIONS.ACCOUNT_ID = BANK_ACCOUNTS.ACCOUNT_ID
+                                    WHERE TRANSACTIONS.USER_ID = $1`;
     return pgdb.query(SQL_SELECT_TRANSACTIONS, bindings);
 };
 

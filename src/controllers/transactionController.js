@@ -2,7 +2,7 @@ const Transaction = require('../models/transactionModel');
 
 module.exports.getTransactions = (req, res, next) => {
     const args = [req.user.uid];
-    Transaction.fetchAll()
+    Transaction.fetchAll(args)
         .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
         .catch((e) => { res.status(400).json({ valid: false, message: e }) });
 }
