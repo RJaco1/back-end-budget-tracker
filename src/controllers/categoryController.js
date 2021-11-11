@@ -7,6 +7,13 @@ module.exports.getCategories = (req, res, next) => {
         .catch((e) => { res.status(400).json({ valid: false, message: e }) });
 }
 
+module.exports.getAllCategories = (req, res, next) => {
+    const args = [req.user.uid];
+    Category.fetchAllCategories(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
+
 module.exports.createCategory = (req, res, next) => {
     const args = [req.body.category, req.body.category_type_id, req.user.uid]
     Category.create(args)

@@ -10,6 +10,12 @@ Category.fetchAll = (data) => {
     return pgdb.query(SQL_SELECT_CATEGORIES, bindings);
 };
 
+Category.fetchAllCategories = (data) => {
+    const bindings = [...data]
+    const SQL_SELECT_CATEGORIES = `SELECT * FROM CATEGORIES WHERE USER_ID = $1`;
+    return pgdb.query(SQL_SELECT_CATEGORIES, bindings);
+};
+
 Category.create = (data) => {
     const bindings = [...data];
     SQL_INSERT_CATEGORY = `INSERT INTO CATEGORIES (CATEGORY, CATEGORY_TYPE_ID, USER_ID)

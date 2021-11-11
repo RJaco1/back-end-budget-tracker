@@ -25,3 +25,38 @@ module.exports.createTransfer = (req, res, next) => {
         .then(() => { res.status(201).json({ valid: true, message: 'new transfer created' }) })
         .catch((e) => { res.status(400).json({ valid: false, message: e }) });
 }
+
+module.exports.filterbyAccountorCategory = (req, res, next) => {
+    const args = [req.params.account, req.params.category, req.user.uid];
+    Transaction.filterbyAccountorCategory(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
+
+module.exports.filterbyAccountAndCategory = (req, res, next) => {
+    const args = [req.params.account, req.params.category, req.user.uid];
+    Transaction.filterbyAccountandCategory(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
+
+module.exports.filterbyDate = (req, res, next) => {
+    const args = [req.params.account, req.params.category, req.params.date, req.user.uid];
+    Transaction.filterdate(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
+
+module.exports.filterbyAccountorCategoryandDate = (req, res, next) => {
+    const args = [req.params.account, req.params.category, req.params.date, req.user.uid];
+    Transaction.filterAccountorCategoryandDate(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
+
+module.exports.filterbyDateOnly = (req, res, next) => {
+    const args = [req.params.date, req.user.uid];
+    Transaction.filterbyDate(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
