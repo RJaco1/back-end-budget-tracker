@@ -164,4 +164,58 @@ Transaction.filterbyDate = (data) => {
     return pgdb.query(SQL_SELECT_DATE, bindings);
 }
 
+Transaction.accountsBalance = (data) => {
+    const bindings = [...data];
+    const SQL_SELECT_ACOUNTSBALANCE = `SELECT SUM(Income - Expenses) AS CURRENT_BALANCE, ACCOUNT_NAME
+                                        FROM (SELECT SUM(CASE WHEN (CATEGORIES_TYPE.CATEGORY_TYPE_id = 1)
+                                                THEN TRANSACTIONS.AMOUNT ELSE 0 END) AS Income,
+                                                SUM(CASE WHEN (CATEGORIES_TYPE.CATEGORY_TYPE_id = 2)
+                                                    THEN TRANSACTIONS.AMOUNT ELSE 0 END) AS Expenses,
+                                                    BANK_ACCOUNTS.ACCOUNT_NAME AS ACCOUNT_NAME FROM TRANSACTIONS
+                                        INNER JOIN CATEGORIES ON TRANSACTIONS.CATEGORY_ID = CATEGORIES.CATEGORY_ID
+                                        INNER JOIN CATEGORIES_TYPE ON CATEGORIES.CATEGORY_TYPE_ID = CATEGORIES_TYPE.CATEGORY_TYPE_ID
+                                        INNER JOIN BANK_ACCOUNTS ON TRANSACTIONS.ACCOUNT_ID = BANK_ACCOUNTS.ACCOUNT_ID
+                                        WHERE TRANSACTIONS.USER_ID = $1
+                                        GROUP BY BANK_ACCOUNTS.ACCOUNT_NAME)
+                                        AS ACCOUNTS_REPORT
+                                        GROUP BY ACCOUNTS_REPORT.ACCOUNT_NAME`;
+    return pgdb.query(SQL_SELECT_ACOUNTSBALANCE, bindings);
+}
+
+Transaction.transactionsTrend = (data) => {
+    const bindings = [...data];
+    const SQL_SELECT_TRANSACTIONSTREND = `SELECT Expenses, SUM(Income - Expenses)
+    OVER(ORDER BY DATE ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS Income, DATE
+    FROM
+    (SELECT SUM(CASE WHEN (CATEGORIES_TYPE.CATEGORY_TYPE_id = 1)
+               THEN TRANSACTIONS.AMOUNT ELSE 0 END) AS Income,
+               SUM(CASE WHEN (CATEGORIES_TYPE.CATEGORY_TYPE_id = 2)
+                   THEN TRANSACTIONS.AMOUNT ELSE 0 END) AS Expenses,
+                   to_char(TRANSACTIONS.TRANSACTION_DATE, 'MM/dd/yyyy') AS DATE FROM TRANSACTIONS
+    INNER JOIN CATEGORIES ON TRANSACTIONS.CATEGORY_ID = CATEGORIES.CATEGORY_ID
+    INNER JOIN CATEGORIES_TYPE ON CATEGORIES.CATEGORY_TYPE_ID = CATEGORIES_TYPE.CATEGORY_TYPE_ID
+    WHERE TRANSACTIONS.ACCOUNT_ID = $1 AND TRANSACTIONS.USER_ID = $2
+    GROUP BY DATE ORDER BY DATE)
+    AS TRANSACTIONS_REPORT`;
+    return pgdb.query(SQL_SELECT_TRANSACTIONSTREND, bindings);
+}
+
+Transaction.accountTotal = (data) => {
+    const bindings = [...data];
+    const SQL_SELECT_ACCOUNTTOTAL = `SELECT SUM(Income - Expenses) AS CURRENT_BALANCE, ACCOUNT_NAME
+    FROM (SELECT SUM(CASE WHEN (CATEGORIES_TYPE.CATEGORY_TYPE_id = 1)
+               THEN TRANSACTIONS.AMOUNT ELSE 0 END) AS Income,
+               SUM(CASE WHEN (CATEGORIES_TYPE.CATEGORY_TYPE_id = 2)
+                   THEN TRANSACTIONS.AMOUNT ELSE 0 END) AS Expenses,
+                   BANK_ACCOUNTS.ACCOUNT_NAME AS ACCOUNT_NAME FROM TRANSACTIONS
+    INNER JOIN CATEGORIES ON TRANSACTIONS.CATEGORY_ID = CATEGORIES.CATEGORY_ID
+    INNER JOIN CATEGORIES_TYPE ON CATEGORIES.CATEGORY_TYPE_ID = CATEGORIES_TYPE.CATEGORY_TYPE_ID
+    INNER JOIN BANK_ACCOUNTS ON TRANSACTIONS.ACCOUNT_ID = BANK_ACCOUNTS.ACCOUNT_ID
+    WHERE BANK_ACCOUNTS.ACCOUNT_ID = $1 AND TRANSACTIONS.USER_ID = $2
+    GROUP BY BANK_ACCOUNTS.ACCOUNT_NAME)
+    AS ACCOUNTS_REPORT
+    GROUP BY ACCOUNTS_REPORT.ACCOUNT_NAME`;
+    return pgdb.query(SQL_SELECT_ACCOUNTTOTAL, bindings);
+}
+
 module.exports = Transaction;

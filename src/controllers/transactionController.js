@@ -60,3 +60,24 @@ module.exports.filterbyDateOnly = (req, res, next) => {
         .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
         .catch((e) => { res.status(400).json({ valid: false, message: e }) });
 }
+
+module.exports.getAccountsBalance = (req, res, next) => {
+    const args = [req.user.uid];
+    Transaction.accountsBalance(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
+
+module.exports.getTransactionsTrend = (req, res, next) => {
+    const args = [req.params.accountid, req.user.uid];
+    Transaction.transactionsTrend(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
+
+module.exports.getAccountTotal = (req, res, next) => {
+    const args = [req.params.accountid, req.user.uid];
+    Transaction.accountTotal(args)
+        .then(({ rows }) => { res.status(200).json({ valid: true, data: rows }) })
+        .catch((e) => { res.status(400).json({ valid: false, message: e }) });
+}
